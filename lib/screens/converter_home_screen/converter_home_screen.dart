@@ -11,6 +11,14 @@ class ConverterHomeScreen extends StatefulWidget {
 }
 
 class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
+  final inputField = TextEditingController();
+
+  @override
+  void dispose() {
+    inputField.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +69,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                                     buildConvertCurrencyField(
                                         converterController),
                                     verticalSpace8,
-                                    buildConvertButton(),
+                                    buildConvertButton(converterController),
                                     verticalSpace12,
                                     Divider(
                                       color: Colors.green[300],
@@ -81,7 +89,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                     )))));
   }
 
-  Widget buildConvertButton() {
+  Widget buildConvertButton(ConverterHomeController controller) {
     return SizedBox(
       width: screenWidth(context),
       height: 54.0,
@@ -90,7 +98,15 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
               backgroundColor: Colors.green[100],
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0))),
-          onPressed: () {},
+          onPressed: () async {
+            if (inputField.text.trim().isNotEmpty) {
+              debugPrint('inputField: ${inputField.text.toString()}');
+              await controller.convertCurrency(
+                  to: controller.toCurrency ?? '',
+                  from: controller.fromCurrency ?? '',
+                  amount: double.parse(inputField.text));
+            }
+          },
           child: Text(
             'Convert',
             style: TextStyle(
@@ -111,7 +127,10 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
           Text(converterHomeController.toCurrency ?? '',
               style:
                   const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
-          Text(converterHomeController.resultConversion.toString(),
+          Text(
+              (converterHomeController.resultConversion ?? 0.0)
+                  .toStringAsFixed(3)
+                  .toString(),
               style:
                   const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w400))
         ],
@@ -129,12 +148,13 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         children: [
           buildFromCurrency(controller),
           horizontalSpace8,
-          const Expanded(
+          Expanded(
               child: TextField(
+            controller: inputField,
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-            decoration: InputDecoration(
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            decoration: const InputDecoration(
                 border: InputBorder.none,
                 hintText: 'e.g 100',
                 hintStyle: TextStyle(fontWeight: FontWeight.w400)),

@@ -43,7 +43,7 @@ class ConverterHomeController extends ChangeNotifier {
   }
 
   Future<void> getCurrencyList() async {
-    var shortFormatCurrencies = await _frankfurterService.getShortCurrencies();
+    var shortFormatCurrencies = await _frankfurterService.getCurrencies();
     if (shortFormatCurrencies.isNotEmpty) {
       currencyList.addAll(shortFormatCurrencies);
       fromCurrency = currencyList.elementAt(0);
@@ -51,6 +51,22 @@ class ConverterHomeController extends ChangeNotifier {
       notifyListeners();
       debugPrint('currencyList.length: ${currencyList.length.toString()}');
       debugPrint('currencyList[0]: ${currencyList.first.toString()}');
+    }
+  }
+
+  Future<void> convertCurrency(
+      {required String to,
+      required String from,
+      required double amount}) async {
+    debugPrint('@convertCurrency controller amount: ${amount.toString()}');
+    var result = await _frankfurterService.convertCurrency(
+        from: from, to: to, amount: amount);
+    if (result != null) {
+      debugPrint('result: ${result.rate?.result.toString()}');
+      resultConversion = result.rate?.result ?? 0.0;
+      notifyListeners();
+    } else {
+      debugPrint('convertCurrency() error');
     }
   }
 
@@ -68,6 +84,7 @@ class ConverterHomeController extends ChangeNotifier {
 
   void selectToCurrency(String currency) {
     toCurrency = currency;
+    resultConversion = 0.0;
     notifyListeners();
   }
 }
