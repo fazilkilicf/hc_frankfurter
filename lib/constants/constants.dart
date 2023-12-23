@@ -5,5 +5,5 @@ const appName = 'HC Frankfurter';
 const currentCurrencyPreferenceKey = 'currentCurrencyKey';
 
 // Networking and API
-const apiBaseUrl = 'api.frankfurter.app';
+const apiBaseUrl = 'https://api.frankfurter.app';
 const apiCurrenciesPath = '/currencies';
