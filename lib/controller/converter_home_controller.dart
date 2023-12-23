@@ -42,6 +42,14 @@ class ConverterHomeController extends ChangeNotifier {
         'currentDropdownCurrency: ${currentDropdownCurrency.toString()}');
   }
 
+  Future<bool> setSelectedCurrencyFromLocal(String currency) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var isSaved = await prefs.setString(currentCurrencyPreferenceKey, currency);
+    debugPrint('setSelectedCurrencyFromLocal isSaved: ${isSaved.toString()}');
+    return isSaved;
+  }
+
   Future<void> getCurrencyList() async {
     var shortFormatCurrencies = await _frankfurterService.getCurrencies();
     if (shortFormatCurrencies.isNotEmpty) {
@@ -68,6 +76,7 @@ class ConverterHomeController extends ChangeNotifier {
   void selectCurrency(String currency) {
     currentDropdownCurrency = currency;
     notifyListeners();
+    setSelectedCurrencyFromLocal(currency);
   }
 
   /// for currency conversion
