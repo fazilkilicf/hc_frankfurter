@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hc_frankfurter/constants/constants.dart';
+import 'package:hc_frankfurter/models/rates_model.dart';
 import 'package:hc_frankfurter/services/frankfurter_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -13,6 +14,7 @@ class ConverterHomeController extends ChangeNotifier {
 
   /// for last conversions
   late String? currentDropdownCurrency;
+  List<RatesModel> latestConversions = [];
 
   /// for currency conversion
   late String? fromCurrency;
@@ -30,6 +32,7 @@ class ConverterHomeController extends ChangeNotifier {
     notifyListeners();
     await getSelectedCurrencyFromLocal();
     await getCurrencyList();
+    await getLatestConversionsFromHive();
     isLoading = false;
     notifyListeners();
   }
@@ -46,11 +49,12 @@ class ConverterHomeController extends ChangeNotifier {
         'currentDropdownCurrency: ${currentDropdownCurrency.toString()}');
   }
 
-  Future<void> setSelectedCurrencyToSharedPrefs(String currency) async {
+  Future<void> setSelectedCurrencyToHive(String currency) async {
     var currentCurrencyBox = await Hive.openBox(currentCurrencyPreferenceKey);
     await currentCurrencyBox.put(currentCurrencyPreferenceKey, currency);
     debugPrint(
         'currentCurrencyBox: ${currentCurrencyBox.get(currentCurrencyPreferenceKey).toString()}');
+    await getLatestConversionsFromHive();
   }
 
   Future<void> getCurrencyList() async {
@@ -63,6 +67,35 @@ class ConverterHomeController extends ChangeNotifier {
     }
   }
 
+  Future<void> addCurrencyConversionToHive(
+      Map<String, dynamic> conversion) async {
+    var latestConversionsBox = await Hive.openBox(latestCurrencyConversionsKey);
+    await latestConversionsBox.add(conversion);
+    debugPrint('amount data is: ${latestConversionsBox.length}');
+    await getLatestConversionsFromHive();
+  }
+
+  Future<void> getLatestConversionsFromHive() async {
+    var latestConversionsBox = await Hive.openBox(latestCurrencyConversionsKey);
+    // modified...
+    final data = latestConversionsBox.keys.map((key) {
+      final conversion = latestConversionsBox.get(key);
+      return RatesModel.customFromJson(conversion);
+    }).toList();
+    latestConversions.clear();
+    notifyListeners();
+
+    // filter
+    for (var conversion in data) {
+      if (conversion.rate?.currency == currentDropdownCurrency) {
+        latestConversions.add(conversion);
+      }
+    }
+    latestConversions = latestConversions.reversed.toList();
+    notifyListeners();
+    debugPrint('latestConversions length: ${data.length}');
+  }
+
   Future<void> convertCurrency(
       {required String to,
       required String from,
@@ -72,14 +105,16 @@ class ConverterHomeController extends ChangeNotifier {
     if (result != null) {
       resultConversion = result.rate?.result ?? 0.0;
       notifyListeners();
-    } else {}
+      debugPrint("result.rate?.result: ${result.rate?.result.toString()}");
+      addCurrencyConversionToHive(result.toJson());
+    }
   }
 
   /// for last conversions
   void selectCurrency(String currency) {
     currentDropdownCurrency = currency;
     notifyListeners();
-    setSelectedCurrencyToSharedPrefs(currency);
+    setSelectedCurrencyToHive(currency);
   }
 
   /// for currency conversion

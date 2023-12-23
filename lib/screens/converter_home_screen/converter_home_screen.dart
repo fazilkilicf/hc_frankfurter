@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hc_frankfurter/constants/constants.dart';
 import 'package:hc_frankfurter/controller/converter_home_controller.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../constants/size_constants.dart';
 
@@ -78,7 +80,9 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                                     verticalSpace12,
                                     buildSelectedCurrency(converterController),
                                     verticalSpace24,
-                                    Expanded(child: buildLastConversionList())
+                                    Expanded(
+                                        child: buildLastConversionList(
+                                            converterController))
                                   ],
                                 );
                               }
@@ -117,22 +121,27 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
   }
 
   Widget buildConvertedResult(ConverterHomeController converterHomeController) {
-    return SizedBox(
-      width: screenWidth(context),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(converterHomeController.toCurrency ?? '',
-              style:
-                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
-          Text(
-              (converterHomeController.resultConversion ?? 0.0)
-                  .toStringAsFixed(3)
-                  .toString(),
-              style:
-                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w400))
-        ],
+    return GestureDetector(
+      onTap: () async {
+        await Hive.box(latestCurrencyConversionsKey).deleteFromDisk();
+      },
+      child: SizedBox(
+        width: screenWidth(context),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(converterHomeController.toCurrency ?? '',
+                style: const TextStyle(
+                    fontSize: 12.0, fontWeight: FontWeight.bold)),
+            Text(
+                (converterHomeController.resultConversion ?? 0.0)
+                    .toStringAsFixed(3)
+                    .toString(),
+                style: const TextStyle(
+                    fontSize: 24.0, fontWeight: FontWeight.w400))
+          ],
+        ),
       ),
     );
   }
@@ -241,7 +250,8 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
     );
   }
 
-  Widget buildLastConversionList() {
+  Widget buildLastConversionList(
+      ConverterHomeController converterHomeController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -251,26 +261,37 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         ),
         verticalSpace12,
         Expanded(
-          child: ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (context, index) => ListTile(
-                    leading: Text(
-                      'EUR',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[800],
-                          fontSize: 18.0),
-                    ),
-                    title: Text(
-                      '30 EUR to TRY = 670.122',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.green[800],
-                          fontSize: 16.0),
-                    ),
-                  ),
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: 10),
+          child: converterHomeController.latestConversions.isEmpty
+              ? const Text(
+                  "It looks like you haven't converted any currency yet.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final conversion = converterHomeController.latestConversions
+                        .elementAt(index);
+                    debugPrint(conversion.toJson().toString());
+                    return ListTile(
+                      leading: Text(
+                        conversion.rate?.currency ?? "",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[800],
+                            fontSize: 18.0),
+                      ),
+                      title: Text(
+                        "${conversion.amount ?? 0.0} ${conversion.base ?? ''} to ${conversion.rate?.currency ?? ''} = ${(conversion.rate?.result ?? 0.0).toStringAsFixed(3)}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.green[800],
+                            fontSize: 16.0),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: converterHomeController.latestConversions.length),
         ),
       ],
     );

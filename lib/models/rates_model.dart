@@ -24,6 +24,31 @@ class RatesModel {
       rate = json["rates"] == null ? null : Rate.fromJson(json["rates"]);
     }
   }
+
+  RatesModel.customFromJson(Map<dynamic, dynamic> json) {
+    if (json["amount"] is double) {
+      amount = json["amount"];
+    }
+
+    if (json["base"] is String) {
+      base = json["base"];
+    }
+    if (json["date"] is String) {
+      date = json["date"];
+    }
+    rate = Rate(currency: json["currency"], result: json['result']);
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data["base"] = base;
+    data["amount"] = amount;
+    data["date"] = date;
+    data["result"] = rate?.result;
+    data["currency"] = rate?.currency;
+
+    return data;
+  }
 }
 
 class Rate {
