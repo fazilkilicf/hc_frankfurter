@@ -50,13 +50,13 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                                 return const Center(
                                     child: CircularProgressIndicator());
                               } else if (converterController
-                                  .shortCurrencyList.isEmpty) {
+                                  .currencyList.isEmpty) {
                                 return const Text('Bir hata oluştu');
                               } else {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    buildConvertedResult(),
+                                    buildConvertedResult(converterController),
                                     verticalSpace16,
                                     buildConvertCurrencyField(
                                         converterController),
@@ -101,17 +101,19 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
     );
   }
 
-  Widget buildConvertedResult() {
+  Widget buildConvertedResult(ConverterHomeController converterHomeController) {
     return SizedBox(
       width: screenWidth(context),
-      child: const Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('TRY',
-              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
-          Text('2500,354',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w400))
+          Text(converterHomeController.toCurrency ?? '',
+              style:
+                  const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
+          Text(converterHomeController.resultConversion.toString(),
+              style:
+                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.w400))
         ],
       ),
     );
@@ -127,7 +129,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         children: [
           buildFromCurrency(controller),
           horizontalSpace8,
-          Expanded(
+          const Expanded(
               child: TextField(
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
@@ -155,16 +157,17 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         ), /* borderRadius: BorderRadius.circular(12.0) */
       ),
       child: DropdownButton<String>(
-        value: controller.currentDropdownCurrency,
+        value: controller.fromCurrency,
+        menuMaxHeight: screenHeight(context) * 0.5,
         borderRadius: BorderRadius.circular(20),
         icon: const SizedBox(),
         elevation: 16,
         style: const TextStyle(color: Colors.deepPurple),
         underline: const SizedBox(),
         onChanged: (String? value) {
-          controller.selectShortCurrency(value!);
+          controller.selectFromCurrency(value!);
         },
-        items: controller.shortCurrencyList
+        items: controller.currencyList
             .map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -192,16 +195,17 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         ), /* borderRadius: BorderRadius.circular(12.0) */
       ),
       child: DropdownButton<String>(
-        value: controller.currentDropdownCurrency,
+        value: controller.toCurrency,
+        menuMaxHeight: screenHeight(context) * 0.5,
         borderRadius: BorderRadius.circular(20),
         icon: const SizedBox(),
         elevation: 16,
         style: const TextStyle(color: Colors.deepPurple),
         underline: const SizedBox(),
         onChanged: (String? value) {
-          controller.selectShortCurrency(value!);
+          controller.selectToCurrency(value!);
         },
-        items: controller.shortCurrencyList
+        items: controller.currencyList
             .map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -278,9 +282,9 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
               style: const TextStyle(color: Colors.deepPurple),
               underline: const SizedBox(),
               onChanged: (String? value) {
-                controller.selectShortCurrency(value!);
+                controller.selectCurrency(value!);
               },
-              items: controller.shortCurrencyList
+              items: controller.currencyList
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,

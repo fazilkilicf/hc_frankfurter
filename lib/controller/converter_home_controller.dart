@@ -5,18 +5,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ConverterHomeController extends ChangeNotifier {
   final FrankfurterService _frankfurterService = FrankfurterService();
-  List<String> shortCurrencyList = [];
+
+  /// list of all currencies
+  List<String> currencyList = [];
+
+  /// for last conversions
   late String? currentDropdownCurrency;
+
+  /// for currency conversion
+  late String? fromCurrency;
+  late String? toCurrency;
+  late double? resultConversion = 0.0;
 
   bool isLoading = false;
 
   Future<void> initConverterHome() async {
-    shortCurrencyList.clear();
+    currencyList.clear();
     currentDropdownCurrency = null;
+    fromCurrency = null;
+    toCurrency = null;
     isLoading = true;
     notifyListeners();
     await getSelectedCurrencyFromLocal();
-    await getShortedCurrenciesList();
+    await getCurrencyList();
     isLoading = false;
     notifyListeners();
   }
@@ -31,19 +42,32 @@ class ConverterHomeController extends ChangeNotifier {
         'currentDropdownCurrency: ${currentDropdownCurrency.toString()}');
   }
 
-  Future<void> getShortedCurrenciesList() async {
-    var shortCurrencies = await _frankfurterService.getShortCurrencies();
-    if (shortCurrencies.isNotEmpty) {
-      shortCurrencyList.addAll(shortCurrencies);
+  Future<void> getCurrencyList() async {
+    var shortFormatCurrencies = await _frankfurterService.getShortCurrencies();
+    if (shortFormatCurrencies.isNotEmpty) {
+      currencyList.addAll(shortFormatCurrencies);
+      fromCurrency = currencyList.elementAt(0);
+      toCurrency = currencyList.elementAt(1);
       notifyListeners();
+      debugPrint('currencyList.length: ${currencyList.length.toString()}');
+      debugPrint('currencyList[0]: ${currencyList.first.toString()}');
     }
-    debugPrint(
-        'shortCurrencyList.length: ${shortCurrencyList.length.toString()}');
-    debugPrint('shortCurrencyList[0]: ${shortCurrencyList.first.toString()}');
   }
 
-  void selectShortCurrency(String currency) {
+  /// for last conversions
+  void selectCurrency(String currency) {
     currentDropdownCurrency = currency;
+    notifyListeners();
+  }
+
+  /// for currency conversion
+  void selectFromCurrency(String currency) {
+    fromCurrency = currency;
+    notifyListeners();
+  }
+
+  void selectToCurrency(String currency) {
+    toCurrency = currency;
     notifyListeners();
   }
 }
