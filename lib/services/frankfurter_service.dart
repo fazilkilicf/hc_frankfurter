@@ -16,8 +16,6 @@ class FrankfurterService {
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = response.data;
         shortFormatCurrencies = responseData.keys.toList();
-        debugPrint(
-            'shortFormatCurrencies length: ${shortFormatCurrencies.length}');
       }
     } on DioException catch (e) {
       debugPrint(e.message);
@@ -36,10 +34,8 @@ class FrankfurterService {
         apiBaseUrl + apiRatesPath,
         queryParameters: {"to": to, "from": from, "amount": amount},
       );
-      debugPrint('response: ${response.data.toString()}');
       if (response.statusCode == 200) {
         rates = RatesModel.fromJson(response.data);
-        debugPrint('_rates: ${rates.rate?.result.toString()}');
       }
     } on DioException catch (e) {
       debugPrint(e.message);

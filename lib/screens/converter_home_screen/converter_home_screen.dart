@@ -100,7 +100,6 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                   borderRadius: BorderRadius.circular(12.0))),
           onPressed: () async {
             if (inputField.text.trim().isNotEmpty) {
-              debugPrint('inputField: ${inputField.text.toString()}');
               await controller.convertCurrency(
                   to: controller.toCurrency ?? '',
                   from: controller.fromCurrency ?? '',

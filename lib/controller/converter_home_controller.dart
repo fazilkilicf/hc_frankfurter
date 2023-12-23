@@ -49,8 +49,6 @@ class ConverterHomeController extends ChangeNotifier {
       fromCurrency = currencyList.elementAt(0);
       toCurrency = currencyList.elementAt(1);
       notifyListeners();
-      debugPrint('currencyList.length: ${currencyList.length.toString()}');
-      debugPrint('currencyList[0]: ${currencyList.first.toString()}');
     }
   }
 
@@ -58,16 +56,12 @@ class ConverterHomeController extends ChangeNotifier {
       {required String to,
       required String from,
       required double amount}) async {
-    debugPrint('@convertCurrency controller amount: ${amount.toString()}');
     var result = await _frankfurterService.convertCurrency(
         from: from, to: to, amount: amount);
     if (result != null) {
-      debugPrint('result: ${result.rate?.result.toString()}');
       resultConversion = result.rate?.result ?? 0.0;
       notifyListeners();
-    } else {
-      debugPrint('convertCurrency() error');
-    }
+    } else {}
   }
 
   /// for last conversions
