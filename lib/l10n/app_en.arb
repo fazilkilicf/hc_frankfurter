@@ -1,0 +1,11 @@
+{
+    "title": "Currency Converter",
+    "hasError":"Something went wrong",
+    "convert":"Convert",
+    "example":"e.g",
+    "lastConversions":"Last Conversions",
+    "noConversion":"It looks like you haven't converted any currency yet.",
+    "currency":"Currency",
+    "checkConnection":"Please check your internet connection."
+
+}

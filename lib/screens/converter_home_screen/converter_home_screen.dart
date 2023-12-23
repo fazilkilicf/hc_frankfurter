@@ -4,6 +4,7 @@ import 'package:hc_frankfurter/controller/converter_home_controller.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../constants/size_constants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConverterHomeScreen extends StatefulWidget {
   const ConverterHomeScreen({super.key});
@@ -46,7 +47,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Currency Converter',
+                            AppLocalizations.of(context)!.title,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24.0,
@@ -61,7 +62,8 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                                     child: CircularProgressIndicator());
                               } else if (converterController
                                   .currencyList.isEmpty) {
-                                return const Text('Bir hata oluştu');
+                                return Text(
+                                    AppLocalizations.of(context)!.hasError);
                               } else {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +113,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
             }
           },
           child: Text(
-            'Convert',
+            AppLocalizations.of(context)!.convert,
             style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 18.0,
@@ -162,10 +164,10 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'e.g 100',
-                hintStyle: TextStyle(fontWeight: FontWeight.w400)),
+                hintText: '${AppLocalizations.of(context)!.example} 100',
+                hintStyle: const TextStyle(fontWeight: FontWeight.w400)),
           )),
           horizontalSpace8,
           buildToCurrency(controller)
@@ -255,17 +257,18 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Last Conversions',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18.0),
+        Text(
+          AppLocalizations.of(context)!.lastConversions,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18.0),
         ),
         verticalSpace12,
         Expanded(
           child: converterHomeController.latestConversions.isEmpty
-              ? const Text(
-                  "It looks like you haven't converted any currency yet.",
+              ? Text(
+                  AppLocalizations.of(context)!.noConversion,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w400, fontSize: 18),
                 )
               : ListView.separated(
                   shrinkWrap: true,
@@ -304,7 +307,7 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "Currency",
+            AppLocalizations.of(context)!.currency,
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18.0,

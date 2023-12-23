@@ -1,0 +1,10 @@
+{
+    "title": "Para Birimi Dönüştürücü",
+    "hasError":"Bir hata oluştu",
+    "convert":"Dönüştür",
+    "example":"örn.",
+    "lastConversions":"Son Dönüştürmeler",
+    "noConversion":"Görünüşe göre henüz bir para birimi dönüşmemişsiniz.",
+    "currency":"Para Birimi",
+    "checkConnection":"Lütfen internet bağlantınızı kontrol ediniz."
+}

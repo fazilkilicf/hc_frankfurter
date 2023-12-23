@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:hc_frankfurter/screens/converter_home_screen/converter_home_screen.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../constants/constants.dart';
 import '../../constants/size_constants.dart';
 
@@ -31,8 +30,8 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Please check your internet connection.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.checkConnection)));
       }
     }
   }
