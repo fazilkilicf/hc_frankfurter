@@ -3,6 +3,7 @@ const appName = 'HC Frankfurter';
 
 // Storage and Databases
 const currentCurrencyPreferenceKey = 'currentCurrencyKey';
+const latestCurrencyConversionsKey = 'latestConversions';
 
 // Networking and API
 const apiBaseUrl = 'https://api.frankfurter.app';

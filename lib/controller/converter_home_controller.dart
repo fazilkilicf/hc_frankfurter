@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hc_frankfurter/constants/constants.dart';
 import 'package:hc_frankfurter/services/frankfurter_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ConverterHomeController extends ChangeNotifier {
   final FrankfurterService _frankfurterService = FrankfurterService();
+  /* var currentCurrencyBox = Hive.box(currentCurrencyPreferenceKey);
+  var latestConversionsBox = Hive.box(latestCurrencyConversionsKey); */
 
   /// list of all currencies
   List<String> currencyList = [];
@@ -33,21 +35,22 @@ class ConverterHomeController extends ChangeNotifier {
   }
 
   getSelectedCurrencyFromLocal() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    currentDropdownCurrency =
-        prefs.getString(currentCurrencyPreferenceKey) ?? 'TRY';
+    var currentCurrencyBox = await Hive.openBox(currentCurrencyPreferenceKey);
+
+    currentDropdownCurrency = await currentCurrencyBox
+        .get(currentCurrencyPreferenceKey, defaultValue: "TRY");
+    notifyListeners();
     debugPrint(
         'currentCurrencyPreferenceKey: ${currentCurrencyPreferenceKey.toString()}');
     debugPrint(
         'currentDropdownCurrency: ${currentDropdownCurrency.toString()}');
   }
 
-  Future<bool> setSelectedCurrencyFromLocal(String currency) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    var isSaved = await prefs.setString(currentCurrencyPreferenceKey, currency);
-    debugPrint('setSelectedCurrencyFromLocal isSaved: ${isSaved.toString()}');
-    return isSaved;
+  Future<void> setSelectedCurrencyToSharedPrefs(String currency) async {
+    var currentCurrencyBox = await Hive.openBox(currentCurrencyPreferenceKey);
+    await currentCurrencyBox.put(currentCurrencyPreferenceKey, currency);
+    debugPrint(
+        'currentCurrencyBox: ${currentCurrencyBox.get(currentCurrencyPreferenceKey).toString()}');
   }
 
   Future<void> getCurrencyList() async {
@@ -76,7 +79,7 @@ class ConverterHomeController extends ChangeNotifier {
   void selectCurrency(String currency) {
     currentDropdownCurrency = currency;
     notifyListeners();
-    setSelectedCurrencyFromLocal(currency);
+    setSelectedCurrencyToSharedPrefs(currency);
   }
 
   /// for currency conversion
