@@ -17,6 +17,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   hive_flutter: ^1.1.0
+  intl: any
   provider: ^6.1.1
   shared_preferences: ^2.2.2
 
