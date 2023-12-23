@@ -6,6 +6,6 @@
     "lastConversions":"Last Conversions",
     "noConversion":"It looks like you haven't converted any currency yet.",
     "currency":"Currency",
-    "checkConnection":"Please check your internet connection."
-
+    "checkConnection":"Please check your internet connection.",
+    "flowRenewed":"The flow has been renewed."
 }

@@ -270,31 +270,43 @@ class _ConverterHomeScreenState extends State<ConverterHomeScreen> {
                   style: const TextStyle(
                       fontWeight: FontWeight.w400, fontSize: 18),
                 )
-              : ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    final conversion = converterHomeController.latestConversions
-                        .elementAt(index);
-                    debugPrint(conversion.toJson().toString());
-                    return ListTile(
-                      leading: Text(
-                        conversion.rate?.currency ?? "",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[800],
-                            fontSize: 18.0),
-                      ),
-                      title: Text(
-                        "${conversion.amount ?? 0.0} ${conversion.base ?? ''} to ${conversion.rate?.currency ?? ''} = ${(conversion.rate?.result ?? 0.0).toStringAsFixed(3)}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.green[800],
-                            fontSize: 16.0),
-                      ),
-                    );
+              : RefreshIndicator.adaptive(
+                  onRefresh: () async {
+                    await converterHomeController
+                        .getLatestConversionsFromHive()
+                        .whenComplete(() => ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .flowRenewed))));
                   },
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemCount: converterHomeController.latestConversions.length),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final conversion = converterHomeController
+                            .latestConversions
+                            .elementAt(index);
+                        debugPrint(conversion.toJson().toString());
+                        return ListTile(
+                          leading: Text(
+                            conversion.rate?.currency ?? "",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[800],
+                                fontSize: 18.0),
+                          ),
+                          title: Text(
+                            "${conversion.amount ?? 0.0} ${conversion.base ?? ''} to ${conversion.rate?.currency ?? ''} = ${(conversion.rate?.result ?? 0.0).toStringAsFixed(3)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.green[800],
+                                fontSize: 16.0),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount:
+                          converterHomeController.latestConversions.length),
+                ),
         ),
       ],
     );

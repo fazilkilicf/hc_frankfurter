@@ -6,5 +6,6 @@
     "lastConversions":"Son Dönüştürmeler",
     "noConversion":"Görünüşe göre henüz bir para birimi dönüşmemişsiniz.",
     "currency":"Para Birimi",
-    "checkConnection":"Lütfen internet bağlantınızı kontrol ediniz."
+    "checkConnection":"Lütfen internet bağlantınızı kontrol ediniz.",
+    "flowRenewed":"Akış yenilendi."
 }
